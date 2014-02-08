@@ -3,7 +3,12 @@
 body {
   color: rgb(200, 200, 200);
   background-color: #202020;
+  font-family: 'Gafata', sans-serif;
 }
+
+h1 { font-size: 40px; }
+h2 { font-size: 40px; }
+h3 { font-size: 30px; }
 
 /* <===== Custom Classes ======> */
 
@@ -34,12 +39,14 @@ body {
 }
 
 .nav-link h3 {
+  vertical-align: middle;
+  line-height: 100px;
   margin: 0;
 }
 .nav-link a { 
   color: black;
   display: block;
-  padding-top: 37px;
+  vertical-align: middle;
 }
 
 .nav-link a:hover { 
