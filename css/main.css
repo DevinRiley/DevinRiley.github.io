@@ -1,0 +1,63 @@
+/* bootstrap overrides */
+
+body {
+  color: rgb(200, 200, 200);
+  background-color: #202020;
+}
+
+
+/* <===== Custom Classes ======> */
+
+/* reusable */
+
+.small-font {
+  font-size: 12px;
+}
+
+/* element-specific */
+
+.header-title {
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.header-subtitle {
+  padding-left: 40px;
+}
+
+.nav-link {
+  height: 100px;
+  text-align: center;
+}
+
+.nav-link a { 
+  color: black;
+  display: block;
+  padding-top: 15px;
+}
+
+.nav-link a:hover { 
+  text-decoration: none;
+}
+.nav-link:nth-child(3n+1) {
+  background-color: #00AC6B;
+}
+
+.nav-link:nth-child(3n+1):hover {
+  background-color: #11BD7C;
+}
+
+.nav-link:nth-child(3n+2) {
+  background-color: #FF5900;
+}
+
+.nav-link:nth-child(3n+2):hover {
+  background-color: #FF6910;
+}
+.nav-link:nth-child(3n+3) {
+  background-color: #70E500;
+}
+
+.nav-link:nth-child(3n+3):hover {
+  background-color: #80F510;
+}
