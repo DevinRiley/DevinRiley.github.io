@@ -3,11 +3,16 @@ layout: default
 title:  Code Breaker
 ---
 
-<div class="container-fluid" id="home">
-  <h1>Blog Posts</h1>
-  <ul class="posts">
-    {% for post in site.posts %}
-      <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
-    {% endfor %}
-  </ul>
-</div>%
+<div class="container-fluid">
+  <div class="row">
+
+    <div class="blog-content col-lg-6 center center-text">
+      <ul class="posts">
+        {% for post in site.posts %}
+          <li><span>{{ post.date | date: "%b %-d %Y" }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+  </div>
+</div>

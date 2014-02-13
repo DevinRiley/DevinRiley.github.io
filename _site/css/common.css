@@ -1,0 +1,15 @@
+/* reusable */
+a:hover { 
+  text-decoration: none;
+}
+
+.center-text {
+  text-align: center;
+}
+.center {
+  margin: 0 auto;
+}
+
+.small-font {
+  font-size: 12px;
+}

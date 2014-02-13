@@ -1,4 +1,5 @@
 /* bootstrap overrides */
+/* resuable classes found in common.css */
 
 body {
   color: rgb(200, 200, 200);
@@ -11,14 +12,6 @@ h2 { font-size: 40px; }
 h3 { font-size: 30px; }
 
 /* <===== Custom Classes ======> */
-
-/* reusable */
-
-.small-font {
-  font-size: 12px;
-}
-
-/* element-specific */
 
 .header { 
   text-align: center;
@@ -49,9 +42,6 @@ h3 { font-size: 30px; }
   vertical-align: middle;
 }
 
-.nav-link a:hover { 
-  text-decoration: none;
-}
 .nav-link:nth-child(3n+1) {
   background-color: #00AC6B;
 }
