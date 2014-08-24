@@ -5,12 +5,56 @@
   COLOR_VALUES = [150, 250, 50, 100, 0]
 	var draw = function() {
 		canvas = document.getElementById('bigCanvas');
-    canvas.width  = window.innerWidth
-    canvas.height = window.innerHeight
 		ctx = canvas.getContext('2d');
-    ctx.fillRect(0,0,canvas.width, canvas.height); // initialize with black
+    setCanvasSize();
+
+    img = new Image;
+    img.src = 'self_portrait.jpg';
+    img.onload = drawImage;
+
+    resizeCanvas();
+
+
+    window.onresize = resizeCanvas;
     window.requestAnimationFrame(drawPattern);
 	}
+
+  var imageMargin = function(img_width) {
+    return (canvas.width - img_width) / 2
+  }
+
+  var drawImage = function() {
+    img_ratio = img.width / img.height;
+    img_boxes = (img.width * img.height) / (COL_WIDTH * COL_HEIGHT);
+    scale_factor = img_boxes / (img.width * img.height);
+    console.log(scale_factor);
+    scale_factor = 0.04
+    w = img.width * scale_factor;
+    h = img.height * scale_factor;
+    /// turn off image smoothing - this will give the pixelated effect
+    ctx.mozImageSmoothingEnabled = false;
+    ctx.webkitImageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, 0, 0, w, h);
+    new_img_width = canvas.height * img_ratio
+    ctx.drawImage(canvas, 0, 0, w, h, imageMargin(new_img_width), 0, new_img_width, canvas.height);
+    ctx.fillRect(0,0,w,h);
+  }
+
+  var resizeCanvas = function() {
+    setCanvasSize();
+    blackOutCanvas();
+    drawImage();
+  }
+
+  var blackOutCanvas = function() {
+    ctx.fillRect(0,0,canvas.width, canvas.height); // initialize with black
+  }
+
+  var setCanvasSize = function() {
+    canvas.width  = window.innerWidth
+    canvas.height = window.innerHeight
+  }
 
   var randColor   = function() {
     return COLOR_VALUES[Math.floor(Math.random() * COLOR_VALUES.length)]
@@ -20,6 +64,7 @@
     var num_cols = Math.ceil(ctx.canvas.width  / COL_WIDTH);
     var num_rows = Math.ceil(ctx.canvas.height / COL_WIDTH);
    
+    drawImage();
     for(var i=0; i <= num_cols; i++) {
       for(var j=0; j <= num_rows; j++) {
         if (Math.random() > 0.99) {
@@ -43,11 +88,16 @@
         left: 0;
         z-index: -1;
       }
-      img {display: none; }
+
+      #text-container {
+        padding: 50px;
+        opacity: 0.9;
+        background-color: black;
+        color: white;
+      }
     </style>
 	<body onload="draw();">
 		<canvas id="bigCanvas"></canvas>
-  <img src="canvas_test.png"\>
 	</body>
 
 </html>
