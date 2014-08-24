@@ -1,1 +1,53 @@
-<h1>New Projects Here</h1>
+<html>
+	<script>
+  COL_WIDTH = 20;
+  COL_HEIGHT = 20;
+  COLOR_VALUES = [150, 250, 50, 100, 0]
+	var draw = function() {
+		canvas = document.getElementById('bigCanvas');
+    canvas.width  = window.innerWidth
+    canvas.height = window.innerHeight
+		ctx = canvas.getContext('2d');
+    ctx.fillRect(0,0,canvas.width, canvas.height); // initialize with black
+    window.requestAnimationFrame(drawPattern);
+	}
+
+  var randColor   = function() {
+    return COLOR_VALUES[Math.floor(Math.random() * COLOR_VALUES.length)]
+  }
+
+  var drawPattern = function(step) {
+    var num_cols = Math.ceil(ctx.canvas.width  / COL_WIDTH);
+    var num_rows = Math.ceil(ctx.canvas.height / COL_WIDTH);
+   
+    for(var i=0; i <= num_cols; i++) {
+      for(var j=0; j <= num_rows; j++) {
+        if (Math.random() > 0.99) {
+          ctx.fillStyle = "rgb(" + randColor() + "," + randColor() + "," + randColor() + ")";
+          ctx.fillRect(i * COL_WIDTH, j * COL_WIDTH, COL_WIDTH, COL_WIDTH);
+        }
+      }
+    }
+    setTimeout(requestNextFrame, 40);
+  }
+
+  var requestNextFrame = function() {
+    window.requestAnimationFrame(drawPattern);
+  }
+
+	</script>
+    <style type="text/css">
+      canvas { 
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+      img {display: none; }
+    </style>
+	<body onload="draw();">
+		<canvas id="bigCanvas"></canvas>
+  <img src="canvas_test.png"\>
+	</body>
+
+</html>
