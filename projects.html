@@ -1,31 +1,67 @@
 <html>
 	<script>
-  COL_WIDTH = 20;
-  COL_HEIGHT = 20;
+  BLOCK_WIDTH  = 20;
+  BLOCK_HEIGHT = 20;
   COLOR_VALUES = [150, 250, 50, 100, 0]
-	var draw = function() {
-		canvas = document.getElementById('bigCanvas');
-		ctx = canvas.getContext('2d');
-    setCanvasSize();
 
-    img = new Image;
-    img.src = 'self_portrait.jpg';
-    img.onload = drawImage;
-
-    resizeCanvas();
-
-
+	var main = function() {
+    initCanvas();
+    initPortrait();
     window.onresize = resizeCanvas;
-    window.requestAnimationFrame(drawPattern);
+//    window.requestAnimationFrame(drawPattern);
 	}
 
+  var initCanvas = function() {
+		canvas = document.getElementById('bigCanvas');
+		ctx = canvas.getContext('2d');
+    resizeCanvas();
+  }
+
+  var initPortrait = function() {
+    img = new Image;
+    img.src = 'self_portrait.jpg';
+    img.onload = resizePortrait;
+  }
+
+  var pixelatePortrait = function() {
+    // Draw version with smaller # of pixels
+    ctx.drawImage(img, 0,0 , tiny_w, tiny_h)
+    // rescale that version to canvas height to get 20x20 sized "pixels"
+    ctx.drawImage(canvas, 0, 0, tiny_w, tiny_h, 500, 0, canvas.height * r, canvas.height);
+  }
+
+  var resizePortrait = function() {
+    ctx.mozImageSmoothingEnabled = false;
+    ctx.webkitImageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = false;
+    // save aspect ratio
+    img.ratio = img.width / img.height
+    // resize original image to fit viewport
+    ctx.drawImage(img, 0, 0, img.ratio * canvas.height, canvas.height)
+    // take that image and calc total pixels
+    sizedImgData = ctx.getImageData(0, 0, img.ratio * canvas.height, canvas.height)
+    // Divide total real pixels by area of a single "new" pixel
+    totalPixels = (sizedImgData.width * sizedImgData.height) / (BLOCK_WIDTH * BLOCK_HEIGHT)
+    // find height of new image with fewer  pixels
+    height_sq = totalPixels / img.ratio
+    tiny_h = Math.round(Math.sqrt(height_sq))
+    // find width of new image with fewer pixels
+    tiny_w = tiny_h * img.ratio
+    // Draw tiny image
+    ctx.drawImage(img, 0, 0, tiny_w, tiny_h)
+    // blow up tiny image to draw final pixelated image
+    ctx.drawImage(canvas, 0, 0, tiny_w, tiny_h, 300, 0, canvas.height * img.ratio, canvas.height)
+
+
+  }
+  
   var imageMargin = function(img_width) {
     return (canvas.width - img_width) / 2
   }
 
   var drawImage = function() {
     img_ratio = img.width / img.height;
-    img_boxes = (img.width * img.height) / (COL_WIDTH * COL_HEIGHT);
+    img_boxes = (img.width * img.height) / (BLOCK_WIDTH * BLOCK_HEIGHT);
     scale_factor = img_boxes / (img.width * img.height);
     console.log(scale_factor);
     scale_factor = 0.04
@@ -44,7 +80,6 @@
   var resizeCanvas = function() {
     setCanvasSize();
     blackOutCanvas();
-    drawImage();
   }
 
   var blackOutCanvas = function() {
@@ -61,15 +96,14 @@
   }
 
   var drawPattern = function(step) {
-    var num_cols = Math.ceil(ctx.canvas.width  / COL_WIDTH);
-    var num_rows = Math.ceil(ctx.canvas.height / COL_WIDTH);
+    var num_cols = Math.ceil(ctx.canvas.width  / BLOCK_WIDTH);
+    var num_rows = Math.ceil(ctx.canvas.height / BLOCK_WIDTH);
    
-    drawImage();
     for(var i=0; i <= num_cols; i++) {
       for(var j=0; j <= num_rows; j++) {
-        if (Math.random() > 0.99) {
+        if (Math.random() > 0.993) {
           ctx.fillStyle = "rgb(" + randColor() + "," + randColor() + "," + randColor() + ")";
-          ctx.fillRect(i * COL_WIDTH, j * COL_WIDTH, COL_WIDTH, COL_WIDTH);
+          ctx.fillRect(i * BLOCK_WIDTH, j * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
         }
       }
     }
@@ -96,7 +130,7 @@
         color: white;
       }
     </style>
-	<body onload="draw();">
+	<body onload="main();">
 		<canvas id="bigCanvas"></canvas>
 	</body>
 
