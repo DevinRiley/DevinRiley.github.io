@@ -8,7 +8,6 @@
     initCanvas();
     initPortrait();
     window.onresize = resizeCanvas;
-//    window.requestAnimationFrame(drawPattern);
 	}
 
   var initCanvas = function() {
@@ -23,14 +22,8 @@
     img.onload = resizePortrait;
   }
 
-  var pixelatePortrait = function() {
-    // Draw version with smaller # of pixels
-    ctx.drawImage(img, 0,0 , tiny_w, tiny_h)
-    // rescale that version to canvas height to get 20x20 sized "pixels"
-    ctx.drawImage(canvas, 0, 0, tiny_w, tiny_h, 500, 0, canvas.height * r, canvas.height);
-  }
-
   var resizePortrait = function() {
+    // Turn off smoothing to get pixelated effect
     ctx.mozImageSmoothingEnabled = false;
     ctx.webkitImageSmoothingEnabled = false;
     ctx.imageSmoothingEnabled = false;
@@ -46,40 +39,42 @@
     height_sq = totalPixels / img.ratio
     tiny_h = Math.round(Math.sqrt(height_sq))
     // find width of new image with fewer pixels
-    tiny_w = tiny_h * img.ratio
+    tiny_w = Math.round(tiny_h * img.ratio)
     // Draw tiny image
     ctx.drawImage(img, 0, 0, tiny_w, tiny_h)
+    // get tiny image data and convert to grayscale
+    tinyData = ctx.getImageData(0, 0, tiny_w, tiny_h);
+    console.log(tinyData.data);
+    convertToGrayscale(tinyData.data);
+    // redraw gray version on canvas
+    ctx.putImageData(tinyData, 0, 0)
     // blow up tiny image to draw final pixelated image
-    ctx.drawImage(canvas, 0, 0, tiny_w, tiny_h, 300, 0, canvas.height * img.ratio, canvas.height)
+    pixelatedImgWidth = canvas.height * img.ratio
+    ctx.drawImage(canvas, 0, 0, tiny_w, tiny_h, imageMargin(pixelatedImgWidth), 0, pixelatedImgWidth, canvas.height)
+    //ctx.clearRect(0,0, img.ratio * canvas.height, canvas.height);
+    window.requestAnimationFrame(drawPattern);
+  }
 
-
+  var convertToGrayscale = function(data) {
+    // takes in ImageData.data and converts it to gray
+    for(var i = 0; i < data.length; i += 4) {
+      var brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+      // red
+      data[i] = brightness;
+      // green
+      data[i + 1] = brightness;
+      // blue
+      data[i + 2] = brightness;
+    }
   }
   
   var imageMargin = function(img_width) {
     return (canvas.width - img_width) / 2
   }
 
-  var drawImage = function() {
-    img_ratio = img.width / img.height;
-    img_boxes = (img.width * img.height) / (BLOCK_WIDTH * BLOCK_HEIGHT);
-    scale_factor = img_boxes / (img.width * img.height);
-    console.log(scale_factor);
-    scale_factor = 0.04
-    w = img.width * scale_factor;
-    h = img.height * scale_factor;
-    /// turn off image smoothing - this will give the pixelated effect
-    ctx.mozImageSmoothingEnabled = false;
-    ctx.webkitImageSmoothingEnabled = false;
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(img, 0, 0, w, h);
-    new_img_width = canvas.height * img_ratio
-    ctx.drawImage(canvas, 0, 0, w, h, imageMargin(new_img_width), 0, new_img_width, canvas.height);
-    ctx.fillRect(0,0,w,h);
-  }
-
   var resizeCanvas = function() {
     setCanvasSize();
-    blackOutCanvas();
+    //blackOutCanvas();
   }
 
   var blackOutCanvas = function() {
@@ -96,18 +91,31 @@
   }
 
   var drawPattern = function(step) {
-    var num_cols = Math.ceil(ctx.canvas.width  / BLOCK_WIDTH);
-    var num_rows = Math.ceil(ctx.canvas.height / BLOCK_WIDTH);
-   
-    for(var i=0; i <= num_cols; i++) {
-      for(var j=0; j <= num_rows; j++) {
+    var numCols = Math.ceil(ctx.canvas.width  / BLOCK_WIDTH);
+    var numRows = Math.ceil(ctx.canvas.height / BLOCK_HEIGHT);
+ //   for (var i = 0; i <= tinyData.data.length; i += 4) {
+ //     var gray = tinyData.data[i]
+ //     ctx.fillStyle = "rgb(" + gray + "," + gray + "," + gray + ")";
+ //     ctx.fillRect( Math.round(count % tiny_w) * BLOCK_WIDTH, Math.floor(count / tiny_w) * BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT);
+ //     console.log(Math.floor(count % tiny_w))
+ //     count += 1;
+ //   }
+    var pixCount = 0
+    for(var i=0; i <= numRows; i++) {
+      for(var j=0; j <= numCols; j++) {
+          var index = (pixCount * 4);
+          var gray = tinyData.data[index]
+          ctx.fillStyle = "rgb(" + gray + "," + gray + "," + gray + ")";
+          ctx.fillRect( Math.round(pixCount % tiny_w) * BLOCK_WIDTH, Math.floor(pixCount / tiny_w) * BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT);
+          pixCount += 1;
         if (Math.random() > 0.993) {
           ctx.fillStyle = "rgb(" + randColor() + "," + randColor() + "," + randColor() + ")";
-          ctx.fillRect(i * BLOCK_WIDTH, j * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
+          ctx.fillRect(j * BLOCK_WIDTH, i * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
         }
       }
     }
     setTimeout(requestNextFrame, 40);
+
   }
 
   var requestNextFrame = function() {
