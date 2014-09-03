@@ -32,13 +32,32 @@
       this.numCols = Math.ceil(ctx.canvas.width  / BLOCK_WIDTH);
       this.numRows = Math.ceil(ctx.canvas.height  / BLOCK_HEIGHT);
       this.fillPixels = function() {
-        for (var row = 0; row <= this.numRows; row++) {
-          for (var col = 0; col <= this.numCols; col++) {
-            (row * col % 2 == 0) ? this.pixels.push("#FFFFFF") : this.pixels.push("#000000");
-          }
-        }
+        var pixCount = 0;
+        this.eachBlock(function(row, col) {
+          //(row * col % 2 == 0) ? this.pixels.push("#FFFFFF") : this.pixels.push("#000000");
+          index = (pixCount * 4);
+          var gray = tinyData.data[index]
+          this.pixels.push("rgb(" + gray + "," + gray + "," + gray + ")")
+          pixCount += 1;
+        })
       }
 
+     this.drawImage = function(pixelData, width) {
+       var count = 0;
+       var pixCount = 0;
+       this.eachBlock(function(row, col) {
+         if (col < width) {
+           gray = pixelData[pixCount * 4]
+           this.pixels[count] = ("rgb(" + gray + "," + gray + "," + gray + ")")
+           pixCount += 1;
+         }
+         else {
+           this.pixels[count] = "#FFFFFF"
+         }
+         count += 1; 
+       });
+
+     }
      this.eachBlock = function(callback) {
        for (var row = 0; row <= this.numRows; row++) {
          for (var col = 0; col <= this.numCols; col++) {
@@ -47,16 +66,16 @@
        }
      }
 
-      this.draw = function() {
-        var pixCount = 0;
-        this.eachBlock(function(row, col) {
-          ctx.fillStyle = this.pixels[pixCount];
-          ctx.fillRect(col * BLOCK_WIDTH, row * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
-          pixCount += 1;
-        });
-      }
-    }
-    return new Blocks(ctx);
+     this.draw = function() {
+       var pixCount = 0;
+       this.eachBlock(function(row, col) {
+         ctx.fillStyle = this.pixels[pixCount];
+         ctx.fillRect(col * BLOCK_WIDTH, row * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
+         pixCount += 1;
+       });
+     }
+   }
+   return new Blocks(ctx);
   }
 
   var resizePortrait = function() {
