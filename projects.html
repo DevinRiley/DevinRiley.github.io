@@ -1,7 +1,7 @@
 <html>
 	<script>
-  BLOCK_WIDTH  = 20;
-  BLOCK_HEIGHT = 20;
+  BLOCK_WIDTH  = 8 
+  BLOCK_HEIGHT = 8;
   COLOR_VALUES = [150, 250, 50, 100, 0]
 
 	var main = function() {
@@ -61,24 +61,29 @@
 
      }
      this.eachBlock = function(callback) {
+       var count = 0;
        for (var row = 0; row <= this.numRows; row++) {
          for (var col = 0; col <= this.numCols; col++) {
-           callback.call(this, row, col)
+           callback.call(this, row, col, count)
+           count += 1;
          }
        }
      }
 
      this.randomColor = function(current) {
-       color = randColor() - Math.round(  (255 - current) );
-       return color
+       return randColor() - Math.round(  (255 - current) );
      }
 
      this.draw = function() {
        var pixCount = 0;
-       this.eachBlock(function(row, col) {
-         ctx.fillStyle = "rgb(" + this.randomColor(this.pixels[pixCount]) + "," + this.randomColor(this.pixels[pixCount]) + "," +  this.randomColor(this.pixels[pixCount]) + ")";
-         ctx.fillRect(col * BLOCK_WIDTH, row * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
-         pixCount += 1;
+       this.eachBlock(function(row, col, count) {
+         if (Math.random() > 0.993) {
+           pixel = this.pixels[count];
+           rgb = [this.randomColor(pixel), this.randomColor(pixel), this.randomColor(pixel)]
+           ctx.fillStyle = "rgb(" + rgb[0] + "," + rgb[1] + "," +  rgb[2] + ")";
+           ctx.fillRect(col * BLOCK_WIDTH, row * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
+           pixCount += 1;
+         }
        });
      }
    }
@@ -115,6 +120,7 @@
     pixelatedImgWidth = canvas.height * img.ratio
     ctx.drawImage(canvas, 0, 0, tiny_w, tiny_h, imageMargin(pixelatedImgWidth), 0, pixelatedImgWidth, canvas.height)
     //ctx.clearRect(0,0, img.ratio * canvas.height, canvas.height);
+    blackOutCanvas();
     window.requestAnimationFrame(drawPattern);
   }
 
@@ -138,6 +144,10 @@
   var resizeCanvas = function() {
     setCanvasSize();
     //blackOutCanvas();
+  }
+
+  var whiteOutCanvas = function() {
+    ctx.fillRect(0,0,canvas.width, canvas.height); // initialize with black
   }
 
   var blackOutCanvas = function() {
