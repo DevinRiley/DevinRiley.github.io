@@ -42,16 +42,15 @@
      this.eachBlock = function(callback) {
        for (var row = 0; row <= this.numRows; row++) {
          for (var col = 0; col <= this.numCols; col++) {
-           callback.call()
+           callback.call(this, row, col)
          }
        }
      }
 
       this.draw = function() {
         var pixCount = 0;
-        var that = this;
-        this.eachBlock(function() {
-          ctx.fillStyle = that.pixels[pixCount];
+        this.eachBlock(function(row, col) {
+          ctx.fillStyle = this.pixels[pixCount];
           ctx.fillRect(col * BLOCK_WIDTH, row * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
           pixCount += 1;
         });
