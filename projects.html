@@ -47,13 +47,15 @@
        var pixCount = 0;
        this.eachBlock(function(row, col) {
          if (col < width) {
+           // grab pixel grayscale value from image data
            gray = pixelData[pixCount * 4]
-           this.pixels[count] = ("rgb(" + gray + "," + gray + "," + gray + ")")
+           this.pixels[count] = gray
            pixCount += 1;
          }
          else {
-           this.pixels[count] = "#FFFFFF"
-         }
+           // just draw white otherwise
+           this.pixels[count] = 255;
+         } 
          count += 1; 
        });
 
@@ -66,10 +68,15 @@
        }
      }
 
+     this.randomColor = function(current) {
+       color = randColor() - Math.round(  (255 - current) );
+       return color
+     }
+
      this.draw = function() {
        var pixCount = 0;
        this.eachBlock(function(row, col) {
-         ctx.fillStyle = this.pixels[pixCount];
+         ctx.fillStyle = "rgb(" + this.randomColor(this.pixels[pixCount]) + "," + this.randomColor(this.pixels[pixCount]) + "," +  this.randomColor(this.pixels[pixCount]) + ")";
          ctx.fillRect(col * BLOCK_WIDTH, row * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
          pixCount += 1;
        });
@@ -147,8 +154,8 @@
   }
 
   var drawPattern = function(step) {
-    var numCols = Math.ceil(ctx.canvas.width  / BLOCK_WIDTH);
-    var numRows = Math.ceil(ctx.canvas.height / BLOCK_HEIGHT);
+//    var numCols = Math.ceil(ctx.canvas.width  / BLOCK_WIDTH);
+//    var numRows = Math.ceil(ctx.canvas.height / BLOCK_HEIGHT);
  //   for (var i = 0; i <= tinyData.data.length; i += 4) {
  //     var gray = tinyData.data[i]
  //     ctx.fillStyle = "rgb(" + gray + "," + gray + "," + gray + ")";
@@ -156,21 +163,23 @@
  //     console.log(Math.floor(count % tiny_w))
  //     count += 1;
  //   }
-    var pixCount = 0
-    for(var i=0; i <= numRows; i++) {
-      for(var j=0; j <= numCols; j++) {
-          var index = (pixCount * 4);
-          var gray = tinyData.data[index]
-          ctx.fillStyle = "rgb(" + gray + "," + gray + "," + gray + ")";
-          ctx.fillRect( Math.round(pixCount % tiny_w) * BLOCK_WIDTH, Math.floor(pixCount / tiny_w) * BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT);
-          pixCount += 1;
-        if (Math.random() > 0.993) {
-          ctx.fillStyle = "rgb(" + randColor() + "," + randColor() + "," + randColor() + ")";
-          ctx.fillRect(j * BLOCK_WIDTH, i * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
-        }
-      }
-    }
-    //setTimeout(requestNextFrame, 40);
+//    var pixCount = 0
+//    for(var i=0; i <= numRows; i++) {
+//      for(var j=0; j <= numCols; j++) {
+//          var index = (pixCount * 4);
+//          var gray = tinyData.data[index]
+//          ctx.fillStyle = "rgb(" + gray + "," + gray + "," + gray + ")";
+//          ctx.fillRect( Math.round(pixCount % tiny_w) * BLOCK_WIDTH, Math.floor(pixCount / tiny_w) * BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT);
+//          pixCount += 1;
+//        if (Math.random() > 0.993) {
+//          ctx.fillStyle = "rgb(" + randColor() + "," + randColor() + "," + randColor() + ")";
+//          ctx.fillRect(j * BLOCK_WIDTH, i * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
+//        }
+//      }
+//    }
+    blocks.drawImage(tinyData.data, tiny_w);
+    blocks.draw();
+    setTimeout(requestNextFrame, 40);
 
   }
 
