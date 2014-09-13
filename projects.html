@@ -8,14 +8,13 @@
     initCanvas();
     initPortrait();
     blocks = initBlocksObject();
-    window.onresize = resizeCanvas;
+    window.onresize = setCanvasSize();
 	}
-
 
   var initCanvas = function() {
 		canvas = document.getElementById('bigCanvas');
 		ctx = canvas.getContext('2d');
-    resizeCanvas();
+    setCanvasSize();
   }
 
   var initPortrait = function() {
@@ -34,7 +33,6 @@
       this.fillPixels = function() {
         var pixCount = 0;
         this.eachBlock(function(row, col) {
-          //(row * col % 2 == 0) ? this.pixels.push("#FFFFFF") : this.pixels.push("#000000");
           index = (pixCount * 4);
           var gray = tinyData.data[index]
           this.pixels.push("rgb(" + gray + "," + gray + "," + gray + ")")
@@ -71,7 +69,8 @@
      }
 
      this.randomColor = function(current) {
-       return randColor() - Math.round(  (255 - current) );
+       // sample from our color array, then subtract passed-in current pixel value
+       return COLOR_VALUES[Math.floor(Math.random() * COLOR_VALUES.length)] - (255 - current)
      }
 
      this.draw = function() {
@@ -112,7 +111,6 @@
     ctx.drawImage(img, 0, 0, tiny_w, tiny_h)
     // get tiny image data and convert to grayscale
     tinyData = ctx.getImageData(0, 0, tiny_w, tiny_h);
-    console.log(tinyData.data);
     convertToGrayscale(tinyData.data);
     // redraw gray version on canvas
     ctx.putImageData(tinyData, 0, 0)
@@ -125,29 +123,18 @@
   }
 
   var convertToGrayscale = function(data) {
-    // takes in ImageData.data and converts it to gray
+    // takes in ImageData.data and converts it to grayscale
     for(var i = 0; i < data.length; i += 4) {
       var brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-      // red
+      // fill the RGB pixels with the same brightness value to get gray
       data[i] = brightness;
-      // green
       data[i + 1] = brightness;
-      // blue
       data[i + 2] = brightness;
     }
   }
   
   var imageMargin = function(img_width) {
     return (canvas.width - img_width) / 2
-  }
-
-  var resizeCanvas = function() {
-    setCanvasSize();
-    //blackOutCanvas();
-  }
-
-  var whiteOutCanvas = function() {
-    ctx.fillRect(0,0,canvas.width, canvas.height); // initialize with black
   }
 
   var blackOutCanvas = function() {
@@ -159,38 +146,11 @@
     canvas.height = window.innerHeight
   }
 
-  var randColor   = function() {
-    return COLOR_VALUES[Math.floor(Math.random() * COLOR_VALUES.length)]
-  }
 
   var drawPattern = function(step) {
-//    var numCols = Math.ceil(ctx.canvas.width  / BLOCK_WIDTH);
-//    var numRows = Math.ceil(ctx.canvas.height / BLOCK_HEIGHT);
- //   for (var i = 0; i <= tinyData.data.length; i += 4) {
- //     var gray = tinyData.data[i]
- //     ctx.fillStyle = "rgb(" + gray + "," + gray + "," + gray + ")";
- //     ctx.fillRect( Math.round(count % tiny_w) * BLOCK_WIDTH, Math.floor(count / tiny_w) * BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT);
- //     console.log(Math.floor(count % tiny_w))
- //     count += 1;
- //   }
-//    var pixCount = 0
-//    for(var i=0; i <= numRows; i++) {
-//      for(var j=0; j <= numCols; j++) {
-//          var index = (pixCount * 4);
-//          var gray = tinyData.data[index]
-//          ctx.fillStyle = "rgb(" + gray + "," + gray + "," + gray + ")";
-//          ctx.fillRect( Math.round(pixCount % tiny_w) * BLOCK_WIDTH, Math.floor(pixCount / tiny_w) * BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT);
-//          pixCount += 1;
-//        if (Math.random() > 0.993) {
-//          ctx.fillStyle = "rgb(" + randColor() + "," + randColor() + "," + randColor() + ")";
-//          ctx.fillRect(j * BLOCK_WIDTH, i * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
-//        }
-//      }
-//    }
     blocks.drawImage(tinyData.data, tiny_w);
     blocks.draw();
     setTimeout(requestNextFrame, 40);
-
   }
 
   var requestNextFrame = function() {
