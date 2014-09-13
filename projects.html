@@ -43,10 +43,11 @@
      this.drawImage = function(pixelData, width) {
        var count = 0;
        var pixCount = 0;
+       var offset = (this.numCols - width) / 2 // for centering image
        this.eachBlock(function(row, col) {
-         if (col < width) {
+         if (col > offset && col < width + offset) { // only draw image data in centered area
            // grab pixel grayscale value from image data
-           gray = pixelData[pixCount * 4]
+           gray = pixelData[pixCount * 4] // sample every 4th point of RGBA data
            this.pixels[count] = gray
            pixCount += 1;
          }
@@ -117,7 +118,6 @@
     // blow up tiny image to draw final pixelated image
     pixelatedImgWidth = canvas.height * img.ratio
     ctx.drawImage(canvas, 0, 0, tiny_w, tiny_h, imageMargin(pixelatedImgWidth), 0, pixelatedImgWidth, canvas.height)
-    //ctx.clearRect(0,0, img.ratio * canvas.height, canvas.height);
     blackOutCanvas();
     window.requestAnimationFrame(drawPattern);
   }
